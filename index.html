@@ -8,6 +8,7 @@
             body{
                 margin: 0px;
                 padding: 0px;
+                background-color: #8EC338;
             }
             .container{
                 margin: 0px;
@@ -16,12 +17,12 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                height: 100vh;
                 width: 100%;
-                background-color: #8EC338;
+                min-height: 100vh;
+                
             }
             #todo-input{
-                height: 40px;
+                height: 45px;
                 width: 400px;
                 font-size: 20px;
                 padding: 10px;
@@ -53,8 +54,12 @@
                 flex-direction: column;
                 align-items: center;
             }
-            .item-list{
+            .item-container{
+                display: flex;
                 min-width: 400px;
+            }
+            .item-list{
+                width: 100%;
                 font-family: 'Major Mono Display', monospace;
                 cursor: pointer;
                 padding: 10px;
@@ -64,10 +69,41 @@
                 box-shadow: 2px 1px;
                 background-color: white;
             }
+            .delete-item{
+                font-family: monospace;
+                position: relative;
+                height: 30px;
+                width: 30px;
+                right: -40px;
+                font-size: 1.5em;
+                padding: 10px;
+                box-shadow: 2px 1px;
+                background-color: #FD6966; 
+                border-radius: 50%;
+                cursor: pointer;
+            }
+            .clear{
+                position: absolute;
+                top: 20;
+                right: 30;
+                font-family: monospace;
+                font-size: 1.5em;
+                padding: 20px;
+                box-shadow: 2px 1px;
+                background-color: #FD6966; 
+                border-radius: 50px;
+                cursor: pointer;
+            }
+            .instructions{
+                font-size: 0.7em;
+                font-family: 'Major Mono Display', monospace;
+                position: relative;
+                bottom: 0px;
+            }
         </style>
     </head>
     <body>
-        
+        <span class="clear" onClick="clearData()">Borrar todo</span>
         <div class="container">
             <h1 class="title">THE GRINCH <span class="title-text-1">TO</span>-<span class="title-text-2">DO</span> <span class="title-text-3">APP</span></h1>
             <input type="text" id="todo-input" onkeyup="this.value = this.value.toLowerCase();">
@@ -75,6 +111,15 @@
                 
             </div>
         </div>
+            <div class="instructions">
+                instrucciones:
+                <ul>
+                    <li>para agregar una tarea nueva escribirla y apretar enter</li>
+                    <li>para marcarla como realizada click sobre la tarea</li>
+                    <li>para eliminar una tarea click en la X del costado</li>
+                    <li>para borrar todo click en el boton rojo de arriba a la izquierda</li>
+                </ul>
+            </div>
 
 
 
@@ -85,7 +130,6 @@
             $(document).ready(function(){
                 $("#todo-input").focus();
                 var holder = JSON.parse(window.localStorage.getItem('listItems'));
-                console.log(holder);
                 if(holder){
                     tareas = holder
                     listarTareas()
@@ -111,7 +155,6 @@
                         status: 'A'
                     }
                     tareas.push(newItem)
-                    console.log(tareas)
                     window.localStorage.setItem('listItems', JSON.stringify(tareas));
                     listarTareas()
                 }
@@ -119,11 +162,11 @@
 
             function listarTareas(){
                 var html = ""
-                tareas.forEach(element => {
+                tareas.forEach((element, id) => {
                     if(element.status === 'I'){
-                        html += `<span class="item-list done" onClick="changeStatus(${element.id})">${element.title}</span> <br />`;
+                        html += `<div class="item-container"><span class="item-list done" onClick="changeStatus(${id})">${element.title}</span> <span onClick="deleteOneItem(${id})" class="delete-item">X</span></div> <br />`;
                     }else{
-                        html += `<span class="item-list" onClick="changeStatus(${element.id})">${element.title}</span> <br />`;
+                        html += `<div class="item-container"><span class="item-list" onClick="changeStatus(${id})">${element.title}</span> <span onClick="deleteOneItem(${id})" class="delete-item">X</span></div> <br />`;
                     }
                 });
                 $("#list").html(html)
@@ -137,6 +180,20 @@
                 }
                 window.localStorage.setItem('listItems', JSON.stringify(tareas));
                 listarTareas()
+            }
+
+            function deleteOneItem(id){
+                tareas.splice(id, 1);
+                window.localStorage.setItem('listItems', JSON.stringify(tareas));
+                listarTareas();
+                $("#todo-input").focus();
+            }
+
+            function clearData(){
+                window.localStorage.clear();
+                tareas = []
+                listarTareas();
+                $("#todo-input").focus();
             }
         </script>
     </body>
