@@ -1,0 +1,143 @@
+<html>
+    <head>
+        <title>TO DO GRINCH</title>
+        <link href="https://fonts.googleapis.com/css?family=Major+Mono+Display" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Mountains+of+Christmas" rel="stylesheet">
+
+        <style>
+            body{
+                margin: 0px;
+                padding: 0px;
+            }
+            .container{
+                margin: 0px;
+                padding: 0px;
+                font-size: 1.5em;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: 100vh;
+                width: 100%;
+                background-color: #8EC338;
+            }
+            #todo-input{
+                height: 40px;
+                width: 400px;
+                font-size: 20px;
+                padding: 10px;
+                border-radius: 20px;
+                font-family: 'Major Mono Display', monospace;
+            }
+            #todo-input:focus{
+                outline:0px;
+            }
+            .done{
+                text-decoration: line-through;
+                color: #999999;
+            }
+            .title{
+                font-family: 'Mountains of Christmas', cursive;
+            }
+            .title-text-1{
+                color: #3E6EFC;
+            }
+            .title-text-2{
+                color: #61A836;
+            }
+            .title-text-3{
+                color: #019C50;
+            }
+            #list{
+                margin-top: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .item-list{
+                min-width: 400px;
+                font-family: 'Major Mono Display', monospace;
+                cursor: pointer;
+                padding: 10px;
+                border: 1px solid black;
+                border-radius: 20px;
+                text-align: center;
+                box-shadow: 2px 1px;
+                background-color: white;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <div class="container">
+            <h1 class="title">THE GRINCH <span class="title-text-1">TO</span>-<span class="title-text-2">DO</span> <span class="title-text-3">APP</span></h1>
+            <input type="text" id="todo-input" onkeyup="this.value = this.value.toLowerCase();">
+            <div id="list">
+                
+            </div>
+        </div>
+
+
+
+
+        <script   src="https://code.jquery.com/jquery-3.3.1.slim.min.js"   integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="   crossorigin="anonymous"></script>
+        <script>        
+            var tareas = []
+            $(document).ready(function(){
+                $("#todo-input").focus();
+                var holder = JSON.parse(window.localStorage.getItem('listItems'));
+                console.log(holder);
+                if(holder){
+                    tareas = holder
+                    listarTareas()
+                }
+            })
+
+
+            $(document).keypress(function(e) {
+                var keyCode = e.keyCode;
+                if(keyCode == 13){
+                    addTask()
+                }
+            });
+        
+            function addTask(){
+                var text = $("#todo-input").val()
+                $("#todo-input").val("")
+
+                if(text.trim()){
+                    var newItem = {
+                        id: tareas.length,
+                        title: text.toLowerCase(),
+                        status: 'A'
+                    }
+                    tareas.push(newItem)
+                    console.log(tareas)
+                    window.localStorage.setItem('listItems', JSON.stringify(tareas));
+                    listarTareas()
+                }
+            }
+
+            function listarTareas(){
+                var html = ""
+                tareas.forEach(element => {
+                    if(element.status === 'I'){
+                        html += `<span class="item-list done" onClick="changeStatus(${element.id})">${element.title}</span> <br />`;
+                    }else{
+                        html += `<span class="item-list" onClick="changeStatus(${element.id})">${element.title}</span> <br />`;
+                    }
+                });
+                $("#list").html(html)
+            }
+
+            function changeStatus(id){
+                if(tareas[id].status === "I"){
+                    tareas[id].status = "A"
+                }else{
+                    tareas[id].status = "I"
+                }
+                window.localStorage.setItem('listItems', JSON.stringify(tareas));
+                listarTareas()
+            }
+        </script>
+    </body>
+</html>
